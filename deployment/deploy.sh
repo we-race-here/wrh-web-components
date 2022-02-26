@@ -16,4 +16,4 @@ python manage.py migrate
 sudo /etc/init.d/nginx start || sudo /etc/init.d/nginx start
 
 # Running Server
-uwsgi --socket mysite.sock --module zp_result.wsgi --buffer-size=100000 --chmod-socket=666 --master --processes 4 --threads 2
+uwsgi --socket mysite.sock --module wrh_web_components.wsgi --buffer-size=100000 --chmod-socket=666 --master --processes 4 --threads 2
