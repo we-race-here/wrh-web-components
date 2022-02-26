@@ -8,7 +8,9 @@ sudo cp -rf ../default.conf  /etc/nginx/sites-available/default
 cp ../.env /home/jenkins/zp-results/wrh_web_components/
 pip install uwsgi
 python manage.py collectstatic
-python manage.py makemigrations migrate
+python manage.py makemigrations
+python manage.py migrate
+
 
 # Restart nginx
 sudo /etc/init.d/nginx start || sudo /etc/init.d/nginx start
