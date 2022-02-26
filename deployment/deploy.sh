@@ -1,5 +1,5 @@
 #!/bin/bash
-git https://github.com/we-race-here/wrh-web-components.git /home/jenkins/zp-results
+git clone https://github.com/we-race-here/wrh-web-components.git /home/jenkins/zp-results
 cd /home/jenkins/zp-results
 git checkout master
 
