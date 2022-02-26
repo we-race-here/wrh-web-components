@@ -5,7 +5,7 @@ git checkout master
 
 sudo cp -rf ../nginx.conf  /etc/nginx/nginx.conf
 sudo cp -rf ../default.conf  /etc/nginx/sites-available/default
-cp ../.env /home/jenkins/zp-results/zp_result/
+cp ../.env /home/jenkins/zp-results/wrh_web_components/
 pip install uwsgi
 python manage.py collectstatic
 python manage.py makemigrations migrate
