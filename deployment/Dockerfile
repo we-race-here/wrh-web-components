@@ -40,8 +40,6 @@ COPY .git-credentials /home/jenkins/
 
 COPY .env /home/jenkins/
 
-COPY ca-certificate.crt /home/jenkins/
-
 COPY nginx.conf /home/jenkins/
 
 COPY default.conf /home/jenkins/
