@@ -8,7 +8,7 @@
         <v-col  class="ma-0 pa-0">
           <v-text-field
             v-model="search"
-            label="Search"
+            label="Search (Name ,Team)"
             single-line
             hide-details
           ></v-text-field>
@@ -148,7 +148,7 @@ export default {
       this.ClubLoader = true;
       axios
         .get(
-          this.FormURL(event, "http://127.0.0.1:8000/api/teamresult/?") +
+          this.FormURL(event, "http://165.232.188.93:8004/api/teamresult/?") +
             "&search=" +
             this.search
         )
