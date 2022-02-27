@@ -1,58 +1,166 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  <div>
+     <v-app>
+       <v-row class="ma-2">
+      <v-col cols="12" sm="2">
+        <b>Filters</b>
+
+        <v-col  class="ma-0 pa-0">
+          <v-text-field
+            v-model="search"
+            label="Search"
+            single-line
+            hide-details
+          ></v-text-field>
+          
+        </v-col>
+
+        <v-col class="ma-0 pa-0 mt-3">
+          <div
+            color="#8a8d93"
+            elevation="0"
+            class="d-flex justify-space-between"
+          >
+            <v-btn color="primary" outlined @click="ClearFilter">Clear</v-btn>
+
+            <v-btn  @click="getEvent(null)">Search</v-btn>
+          </div>
+        </v-col>
+      </v-col>
+      <v-col >
+        <!-- <b>Results</b> -->
+
+        <v-data-table
+          :loading="ClubLoader"
+          dense
+          :footer-props="{
+            'items-per-page-options': ['all'],
+          }"
+          :headers="Eventheaders"
+          :items="Club"
+          item-key="name"
+          :search="search"
+          :options.sync="pagination_events"
+          :server-items-length="totalCount"
+          class="elevation-1 mt-2"
+        >
+          
+        </v-data-table>
+      </v-col>
+    </v-row>
+     </v-app>
+    
+    <!-- Filter Code -->
+
+    <!-- Filter Code End-->
   </div>
 </template>
 
 <script>
+import axios from "axios";
+import {VBtn, VDataTable , VRow, VCol , VApp} from 'vuetify/lib'
+
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+  components: {
+    VBtn, VDataTable,VRow,VCol,VApp
+  },
+  computed: {
+    totalCount() {
+      var count = 25;
+      // this.Club.count
+      if (this.Club ) {
+        return this.Club.length;
+      }
+      return count;
+    },
+  },
+
+  data() {
+    return {
+      Club: [],
+      DateRange: [],
+      State: null,
+      StateList: [],
+      Labels: [],
+      DisciplineList: [],
+
+      pagination_events: {},
+      search: "",
+      ClubLoader: false,
+      Eventheaders: [
+        {text: "Name", value: "name" },
+        {text: "Race Type", value: "f_t" },
+        {text: "Team Name", value: "tname" },
+      ],
+      is_featured: false,
+      is_usac_sanctioned: false,
+    };
+  },
+  mounted() {
+    
+  },
+  watch: {
+    pagination_events: {
+      handler(value) {
+        this.getEvent(value);
+      },
+      deep: true,
+    },
+  },
+  methods: {
+    ClearFilter() {
+      this.State = null;
+      this.search = null;
+    },
+    FormURL(event, endpoint) {
+      var query_param = "";
+      var link = endpoint;
+      try {
+        // Ordering Logic
+        if (event && event.sortBy.length >= 1) {
+          for (var [i, v] of event.sortBy.entries()) {
+            if (event.sortDesc[i]) {
+              query_param += "&ordering=-" + v + "&";
+            } else {
+              query_param += "&ordering=" + v + "&";
+            }
+          }
+        }
+        // Pagination
+        if (event) {
+          link += "&page=" + event.page;
+        }
+
+        // Filtering
+
+        if (this.State) {
+          link += "&club_aff_type__aff_type_description=" + this.State;
+        }
+
+        return link + query_param;
+      } catch (err) {
+        console.log(err);
+        return link;
+      }
+    },
+    getEvent(event) {
+      this.Club = [];
+      this.ClubLoader = true;
+      axios
+        .get(
+          this.FormURL(event, "http://127.0.0.1:8000/api/teamresult/?") +
+            "&search=" +
+            this.search
+        )
+        .then((data) => {
+          this.Club = data.data;
+          this.ClubLoader = false;
+        });
+    },
+  },
+};
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+<style > 
+  @import 'https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css';
 </style>

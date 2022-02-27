@@ -15,6 +15,7 @@ class TeamResultViewset(
     queryset = models.TeamResult.objects.all()
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_class = customfilters.FilterFilter
+    search_fields = ['name', 'tname']
 
     def list(self, request, *args, **kwargs):
         """
